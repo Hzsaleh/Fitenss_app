@@ -1,7 +1,7 @@
 // script_v3.js
 document.addEventListener('DOMContentLoaded', initApp);
 
-const API_BASE_URL = 'http://HuzaifaSaleh.pythonanywhere.com/api';
+const API_BASE_URL = 'https://HuzaifaSaleh.pythonanywhere.com/api';
 
 let ALL_USERS_DATA = [];
 let EXERCISE_CATALOG_DATA = {};
