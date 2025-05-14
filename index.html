@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0e7ff; 
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .app-logo { display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; color: #4f46e5; }
+        .app-logo svg { width: 30px; height: 30px; margin-right: 8px; }
+        .exercise-log-item { border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 4px; background-color: #f9fafb; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); } /* Adjusted width for responsiveness */
+        .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-button:hover, .close-button:focus { color: black; text-decoration: none; }
+        .tab-button { padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; font-size: 0.875rem; /* text-sm */ }
+        .tab-button.active { border-bottom-color: #4f46e5; color: #4f46e5; font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .whitespace-pre-wrap { white-space: pre-wrap; }
+        .text-xxs { font-size: 0.65rem; line-height: 0.85rem; }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+        <header class="mb-8 text-center">
+            <div class="app-logo mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                <span>FitTrack Pro</span>
+            </div>
+            <p class="text-gray-600 mt-1 text-sm sm:text-base">Your ultimate fitness and calorie tracking companion! Hosted by Huzaifa Saleh.</p>
+            <div class="mt-2"><a href="https://open.spotify.com/playlist/2weSMfKwCsdWHkR7yg4aO1?si=50fa5076ee754805" target="_blank" class="text-indigo-500 hover:text-indigo-700 underline text-sm">Gym Songs</a></div>
+        </header>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                    <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">Active User</h2>
+                    <select id="userSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"></select>
+                    <p class="text-sm text-gray-600 mt-2">Points: <span id="userPoints" class="font-bold">0</span></p>
+                </div>
+
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                    <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">My Profile & Goals</h2>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium">Age:</label>
+                        <input type="number" id="userAge" placeholder="e.g., 30" class="mt-1 w-full p-2 common-input">
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-xs sm:text-sm font-medium">Gender:</label>
+                        <select id="userGender" class="mt-1 w-full p-2 common-input">
+                            <option value="">Select Gender</option> <option value="male">Male</option> <option value="female">Female</option> <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-xs sm:text-sm font-medium">Current Weight (kg):</label>
+                        <input type="number" step="0.1" id="userWeight" placeholder="e.g., 70" class="mt-1 w-full p-2 common-input">
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-xs sm:text-sm font-medium">Height (cm):</label>
+                        <input type="number" id="userHeight" placeholder="e.g., 175" class="mt-1 w-full p-2 common-input">
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-xs sm:text-sm font-medium">Target Weight (kg):</label>
+                        <input type="number" step="0.1" id="userTargetWeight" placeholder="e.g., 65" class="mt-1 w-full p-2 common-input">
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-xs sm:text-sm font-medium">Activity Level:</label>
+                        <select id="userActivityLevel" class="mt-1 w-full p-2 common-input">
+                            <option value="sedentary">Sedentary (little/no exercise)</option> <option value="light">Light (1-3 days/week exercise)</option> <option value="moderate">Moderate (3-5 days/week exercise)</option> <option value="active">Active (6-7 days/week exercise)</option> <option value="very_active">Very Active (hard exercise/physical job)</option>
+                        </select>
+                    </div>
+                    <button id="updateProfileBtn" class="mt-4 w-full action-button">Update Profile</button>
+                    <p id="profileStatus" class="status-text"></p>
+                </div>
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                    <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">Today's Calorie Summary</h2>
+                    <p class="text-xs sm:text-sm">Recommended Intake: <strong id="recoCaloriesDisplay" class="text-indigo-600">-</strong> kcal</p>
+                    <p class="text-xs sm:text-sm">Total Intake (Logged): <strong id="totalIntakeDisplay" class="text-green-600">-</strong> kcal</p>
+                    <p class="text-xs sm:text-sm">Workout Calories Burnt: <strong id="workoutBurntDisplay" class="text-red-500">-</strong> kcal</p>
+                    <p class="text-xs sm:text-sm">Steps Calories Burnt: <strong id="stepsBurntDisplay" class="text-red-500">-</strong> kcal</p>
+                    <p class="mt-1 text-xs sm:text-sm">Net Calories: <strong id="netCaloriesDisplay" >-</strong> kcal</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                    <h2 class="text-lg sm:text-xl font-semibold mb-1 text-indigo-700">Log Today's Workout</h2>
+                    <p class="text-xs sm:text-sm text-gray-500 mb-4">For: <span id="currentDate" class="font-medium"></span></p>
+                    <div class="mb-3">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700">Body Parts Trained (select multiple):</label>
+                        <div id="bodyPartChecklist" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1 max-h-32 overflow-y-auto p-1 border rounded"></div>
+                    </div>
+                    <div id="exercisesToLogContainer" class="mb-3 space-y-3 max-h-60 overflow-y-auto"></div>
+                    <button id="addExerciseToLogBtn" class="w-full secondary-button mb-3">Add Exercise</button>
+                    <button id="logWorkoutSessionBtn" class="w-full action-button">Log Workout Session</button>
+                    <p id="logStatus" class="status-text"></p>
+                </div>
+
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                    <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">Log Calorie Intake</h2>
+                    <div class="mb-3">
+                        <label class="block text-xs sm:text-sm font-medium">Log Steps for Today:</label>
+                        <input type="number" id="dailyStepsInput" placeholder="e.g., 8000" class="mt-1 w-full p-2 common-input">
+                        <button id="logStepsBtn" class="mt-1 w-full secondary-button-sm">Log Steps</button>
+                    </div>
+                    <hr class="my-4">
+                    <h3 class="text-base sm:text-lg font-medium mb-2">Log Food Items</h3>
+                    <div class="mb-3">
+                        <label class="block text-xs sm:text-sm font-medium">Food Item (from list):</label>
+                        <select id="manualFoodItemSelect" class="mt-1 w-full p-2 common-input"></select>
+                    </div>
+                     <div class="mb-3">
+                        <label class="block text-xs sm:text-sm font-medium">Or Enter Manually - Food Name:</label>
+                        <input type="text" id="manualFoodName" placeholder="e.g., Custom Salad" class="mt-1 w-full p-2 common-input">
+                        <label class="block text-xs sm:text-sm font-medium mt-1">Calories:</label>
+                        <input type="number" id="manualFoodCalories" placeholder="e.g., 350" class="mt-1 w-full p-2 common-input">
+                    </div>
+                    <button id="logManualFoodBtn" class="w-full secondary-button-sm mb-3">Log This Food</button>
+                    <div class="mt-3 border-t pt-3">
+                        <label class="block text-xs sm:text-sm font-medium">Log Food by Picture (Placeholder):</label>
+                        <input type="file" id="foodImageInput" accept="image/*" class="mt-1 w-full text-xs sm:text-sm p-1 border rounded">
+                        <button id="uploadFoodImageBtn" class="mt-1 w-full secondary-button-sm">Recognize Food (Simulated)</button>
+                        <div id="foodImageRecognitionResult" class="text-xs mt-1"></div>
+                    </div>
+                    <p id="intakeLogStatus" class="status-text"></p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-xl shadow-lg">
+                    <div class="flex border-b flex-wrap sm:flex-nowrap">
+                        <button class="tab-button active" onclick="openTab(event, 'myLogsTab')">My Day</button>
+                        <button class="tab-button" onclick="openTab(event, 'teamActivityTab')">Team</button>
+                        <button class="tab-button" onclick="openTab(event, 'suggestionsTab')">Suggestions</button>
+                        <button class="tab-button" onclick="openTab(event, 'finesTab')">Fines</button>
+                        <button class="tab-button" onclick="openTab(event, 'askHostTab')">Ask Host</button>
+                    </div>
+
+                    <div id="myLogsTab" class="tab-content active p-4">
+                        <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">My Activity Today (<span id="selectedUserNameDisplay" class="font-medium">User</span>)</h2>
+                        <div id="currentUserLog" class="text-gray-700 space-y-3 text-xs sm:text-sm max-h-96 overflow-y-auto"></div>
+                    </div>
+                    <div id="teamActivityTab" class="tab-content p-4">
+                        <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">Team's Activity Today</h2>
+                        <div class="overflow-x-auto max-h-96">
+                            <table class="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
+                                <thead class="bg-gray-50 sticky top-0"><tr class="text-left"><th class="th-cell">User</th><th class="th-cell">Activity</th><th class="th-cell">Duration</th><th class="th-cell">Calories</th></tr></thead>
+                                <tbody id="teamActivityTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="suggestionsTab" class="tab-content p-4 space-y-4">
+                        <div>
+                            <h3 class="text-base sm:text-lg font-medium text-gray-800 mb-2">Exercise Suggestions</h3>
+                            <label for="suggestExBodyPart" class="text-xs sm:text-sm">Filter by Body Part:</label>
+                            <select id="suggestExBodyPart" class="w-full p-2 common-input text-xs sm:text-sm mb-1"></select>
+                            <label for="suggestExLevel" class="text-xs sm:text-sm">Filter by Level:</label>
+                            <select id="suggestExLevel" class="w-full p-2 common-input text-xs sm:text-sm mb-2"><option value="Beginner">Beginner</option><option value="Medium" selected>Medium</option><option value="Advanced">Advanced</option></select>
+                            <button id="getExerciseSuggestionsBtn" class="w-full secondary-button-sm">Get Suggestions</button>
+                            <div id="exerciseSuggestionsList" class="mt-2 text-xs space-y-1 max-h-60 overflow-y-auto"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-base sm:text-lg font-medium text-gray-800 mb-2">Food Intake Suggestions</h3>
+                            <p class="text-xxs sm:text-xs">To meet your <strong id="targetRecoCaloriesSuggest">-</strong> kcal target (you need <strong id="caloriesNeededSuggest">-</strong> more kcal):</p>
+                            <div id="foodSuggestionsList" class="mt-2 text-xs space-y-1 max-h-40 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                    <div id="finesTab" class="tab-content p-4">
+                        <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">Pending Fines for <span id="fineUserNameDisplay">User</span></h2>
+                        <div id="pendingFinesList" class="space-y-2 text-xs sm:text-sm max-h-96 overflow-y-auto"></div>
+                    </div>
+                    <div id="askHostTab" class="tab-content p-4">
+                        <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">Ask the Host (Huzaifa Saleh)</h2>
+                        <textarea id="hostQuestionText" rows="3" class="w-full p-2 common-input" placeholder="Type your question here..."></textarea>
+                        <button id="submitHostQuestionBtn" class="mt-2 w-full action-button">Submit Question</button>
+                        <p id="hostQuestionStatus" class="status-text"></p>
+                        <div id="viewHostQuestionsSection" class="mt-4 hidden"><h3 class="text-base sm:text-lg font-medium text-gray-800 mb-2">Submitted Questions</h3><div id="hostQuestionsList" class="text-xs space-y-2 max-h-60 overflow-y-auto"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-center text-xs sm:text-sm text-gray-500">
+            <p>© <span id="currentYear"></span> FitTrack Pro. Stay Fit!</p>
+            <button id="triggerFineCheckBtn" class="mt-2 text-xs bg-red-100 text-red-700 hover:bg-red-200 py-1 px-2 rounded">Manually Trigger Daily Fine Check (Admin)</button>
+        </footer>
+    </div>
+
+    <div id="answerModal" class="modal">
+        <div class="modal-content bg-white p-4 sm:p-6 rounded-lg shadow-xl max-w-lg mx-auto mt-10 sm:mt-20">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg sm:text-xl font-semibold text-indigo-700">Answer Question</h3>
+                <span class="close-button text-2xl cursor-pointer text-gray-500 hover:text-gray-800" 
+                      onclick="document.getElementById('answerModal').style.display='none'">&times;</span>
+            </div>
+            <div class="mb-3">
+                <p class="text-xs sm:text-sm font-medium text-gray-700">Question from <strong id="answerModalUser"></strong>:</p>
+                <p class="text-xs sm:text-sm text-gray-600 bg-gray-100 p-2 rounded mt-1 whitespace-pre-wrap" id="answerModalQuestionText"></p>
+            </div>
+            <textarea id="answerModalTextarea" rows="4" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Type your answer here..."></textarea>
+            <input type="hidden" id="answerModalQuestionId">
+            <div class="mt-4 flex justify-end space-x-2 sm:space-x-3">
+                <button type="button" class="secondary-button-sm bg-gray-300 hover:bg-gray-400 text-gray-800" onclick="document.getElementById('answerModal').style.display='none'">Cancel</button>
+                <button id="submitAnswerBtn" class="action-button">Submit Answer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(event, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none"; tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) { tablinks[i].classList.remove("active"); }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.common-input').forEach(el => {el.classList.add('border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-indigo-500', 'focus:border-indigo-500', 'text-sm');});
+            document.querySelectorAll('.action-button').forEach(el => {el.classList.add('bg-indigo-600', 'hover:bg-indigo-700', 'text-white', 'font-semibold', 'py-2', 'px-3', 'sm:px-4', 'rounded-lg', 'shadow-md', 'hover:shadow-lg', 'transition', 'duration-150', 'ease-in-out', 'transform', 'hover:-translate-y-0.5', 'text-sm');});
+            document.querySelectorAll('.secondary-button').forEach(el => {el.classList.add('bg-green-500', 'hover:bg-green-600', 'text-white', 'font-semibold', 'py-2', 'px-3', 'rounded-lg', 'text-sm');});
+            document.querySelectorAll('.secondary-button-sm').forEach(el => {el.classList.add('bg-blue-500', 'hover:bg-blue-600', 'text-white', 'font-semibold', 'py-1', 'px-2', 'rounded-lg', 'text-xs');});
+            document.querySelectorAll('.th-cell').forEach(el => {el.classList.add('px-2', 'sm:px-3', 'py-2', 'text-left', 'text-xs', 'font-medium', 'text-gray-500', 'uppercase', 'tracking-wider');});
+            document.querySelectorAll('.status-text').forEach(el => {el.classList.add('text-xs', 'sm:text-sm', 'mt-2', 'text-center');});
+        });
+    </script>
+    <script src="script_v3.js"></script>
+</body>
+</html>
